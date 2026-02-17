@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appointly — Smart Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --cream: #f5f0e8;
+    --warm: #e8dfc8;
+    --gold: #c9a84c;
+    --gold-light: #e8c86e;
+    --muted: #7a7060;
+    --accent: #2b4a3e;
+    --accent-light: #3d6b5c;
+    --surface: #faf7f2;
+    --border: #d8d0bc;
+    --danger: #b84040;
+    --shadow: 0 4px 40px rgba(13,13,13,0.08);
+    --shadow-lg: 0 20px 80px rgba(13,13,13,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(245,240,232,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    animation: slideDown 0.6s ease both;
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 500; letter-spacing: 0.02em;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 0.5rem;
+    text-decoration: none;
+  }
+  .logo-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; display: inline-block; }
+
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a {
+    font-size: 0.85rem; font-weight: 400; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  .btn-nav {
+    background: var(--ink); color: var(--cream);
+    padding: 0.55rem 1.4rem; border-radius: 2rem;
+    font-size: 0.85rem; font-weight: 400; letter-spacing: 0.04em;
+    text-transform: uppercase; cursor: pointer; border: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-nav:hover { background: var(--accent); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 3rem 4rem;
+    gap: 4rem;
+    position: relative; overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -100px; left: 10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(43,74,62,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-text { position: relative; z-index: 1; }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 1.5rem;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block; width: 32px; height: 1px; background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 300; line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.7s 0.35s ease both;
+  }
+  .hero-title em { font-style: italic; color: var(--gold); }
+
+  .hero-sub {
+    font-size: 1rem; line-height: 1.7; color: var(--muted); font-weight: 300;
+    max-width: 420px; margin-bottom: 2.5rem;
+    animation: fadeUp 0.7s 0.5s ease both;
+  }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 1.2rem;
+    animation: fadeUp 0.7s 0.65s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent); color: var(--cream);
+    padding: 0.85rem 2rem; border-radius: 3rem; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 400;
+    letter-spacing: 0.03em; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(43,74,62,0.3); }
+  .btn-primary:hover::after { opacity: 1; }
+
+  .btn-ghost {
+    background: none; color: var(--ink); border: 1.5px solid var(--border);
+    padding: 0.85rem 2rem; border-radius: 3rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--ink); background: rgba(13,13,13,0.04); }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 3rem;
+    animation: fadeUp 0.7s 0.8s ease both;
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.15rem; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 500; line-height: 1; color: var(--ink);
+  }
+  .stat-label { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+
+  /* ── CALENDAR WIDGET ── */
+  .hero-widget {
+    position: relative; z-index: 1;
+    animation: fadeLeft 0.8s 0.3s ease both;
+  }
+
+  .widget-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    max-width: 420px; margin-left: auto;
+  }
+
+  .widget-header {
+    background: var(--ink); color: var(--cream);
+    padding: 1.5rem 1.8rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .widget-month {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 400;
+  }
+  .widget-nav { display: flex; gap: 0.5rem; }
+  .widget-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid rgba(245,240,232,0.2); background: none;
+    color: var(--cream); cursor: pointer; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .widget-btn:hover { background: rgba(245,240,232,0.1); }
+
+  .widget-body { padding: 1.5rem 1.8rem; }
+
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem; margin-bottom: 1.5rem;
+  }
+  .cal-day-name {
+    text-align: center; font-size: 0.65rem; letter-spacing: 0.1em;
+    color: var(--muted); text-transform: uppercase; padding: 0.3rem;
+    font-weight: 500;
+  }
+  .cal-day {
+    text-align: center; padding: 0.45rem; border-radius: 8px;
+    font-size: 0.82rem; cursor: pointer; transition: all 0.15s;
+    position: relative; color: var(--ink);
+  }
+  .cal-day:hover:not(.inactive):not(.selected) { background: var(--warm); }
+  .cal-day.inactive { color: var(--border); cursor: default; }
+  .cal-day.has-slot::after {
+    content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; background: var(--gold); border-radius: 50%;
+  }
+  .cal-day.selected {
+    background: var(--accent); color: var(--cream);
+    font-weight: 500;
+  }
+  .cal-day.selected::after { background: var(--cream); }
+  .cal-day.today { font-weight: 500; }
+  .cal-day.today:not(.selected) { color: var(--accent); }
+
+  .time-slots { margin-bottom: 1.2rem; }
+  .slots-label {
+    font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 0.8rem;
+  }
+  .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .slot {
+    padding: 0.5rem; border-radius: 10px;
+    border: 1.5px solid var(--border); background: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+    cursor: pointer; transition: all 0.15s; color: var(--ink);
+    text-align: center;
+  }
+  .slot:hover:not(.booked):not(.selected-slot) { border-color: var(--accent); color: var(--accent); }
+  .slot.booked { color: var(--border); cursor: default; text-decoration: line-through; }
+  .slot.selected-slot {
+    background: var(--accent); border-color: var(--accent);
+    color: var(--cream); font-weight: 500;
+  }
+
+  .widget-cta {
+    background: var(--gold); color: var(--ink);
+    width: 100%; padding: 0.9rem; border-radius: 14px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em;
+  }
+  .widget-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .floating-badge {
+    position: absolute; top: -12px; left: -20px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 0.6rem 1rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    box-shadow: var(--shadow); font-size: 0.8rem; white-space: nowrap;
+    animation: float 3s ease-in-out infinite;
+  }
+  .badge-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: white; font-weight: 600;
+  }
+
+  .floating-confirm {
+    position: absolute; bottom: 20px; right: -20px;
+    background: var(--accent); color: var(--cream);
+    border-radius: 14px; padding: 0.7rem 1.1rem;
+    font-size: 0.78rem; font-weight: 400;
+    box-shadow: 0 8px 24px rgba(43,74,62,0.35);
+    animation: float 3s 1.5s ease-in-out infinite;
+  }
+  .confirm-check { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .check-circle {
+    width: 18px; height: 18px; background: rgba(255,255,255,0.2);
+    border-radius: 50%; display: inline-flex; align-items: center;
+    justify-content: center; font-size: 0.65rem;
+  }
+
+  /* ── SERVICES ── */
+  .services {
+    padding: 6rem 3rem;
+    background: var(--ink); color: var(--cream);
+    position: relative; overflow: hidden;
+  }
+  .services::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px
+    ), repeating-linear-gradient(
+      90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px
+    );
+  }
+
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 3.5rem; position: relative; z-index: 1;
+  }
+  .section-tag {
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 0.8rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .section-tag::before { content: ''; display: block; width: 20px; height: 1px; background: var(--gold); }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3.5vw, 3.5rem); font-weight: 300; line-height: 1.1;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  .services-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    position: relative; z-index: 1;
+  }
+
+  .service-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    padding: 2.5rem 2rem;
+    cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .service-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .service-card:hover { background: rgba(255,255,255,0.06); }
+  .service-card:hover::before { opacity: 1; }
+  .service-card:hover .service-icon { color: var(--gold); }
+
+  .service-icon {
+    font-size: 1.8rem; margin-bottom: 1.2rem;
+    transition: color 0.3s; color: rgba(255,255,255,0.5);
+  }
+  .service-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem; font-weight: 400; margin-bottom: 0.6rem;
+  }
+  .service-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.6; margin-bottom: 1.2rem; }
+  .service-duration {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid rgba(201,168,76,0.3);
+    padding: 0.3rem 0.7rem; border-radius: 20px;
+  }
+  .service-price {
+    position: absolute; top: 2rem; right: 2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 300; color: rgba(255,255,255,0.4);
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-it-works { padding: 7rem 3rem; background: var(--surface); }
+
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 4rem; }
+  .step { position: relative; }
+  .step::after {
+    content: '';
+    position: absolute; top: 28px; left: calc(100% - 1rem); right: -1rem;
+    height: 1px; background: var(--border);
+  }
+  .step:last-child::after { display: none; }
+
+  .step-num {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400;
+    margin-bottom: 1.5rem; position: relative; z-index: 1;
+    background: var(--surface); transition: all 0.3s;
+  }
+  .step:hover .step-num {
+    background: var(--accent); color: var(--cream);
+    border-color: var(--accent);
+  }
+  .step-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; }
+  .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── BOOKING MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(13,13,13,0.5); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface); border-radius: 28px;
+    width: 90vw; max-width: 720px; max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s;
+    scrollbar-width: none;
+  }
+  .modal-overlay.active .modal { transform: none; }
+
+  .modal-top {
+    background: var(--ink); color: var(--cream);
+    padding: 2rem 2.5rem; border-radius: 28px 28px 0 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300;
+  }
+  .modal-close {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15); background: none;
+    color: var(--cream); font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.1); }
+
+  .modal-body { padding: 2rem 2.5rem; }
+
+  .modal-progress {
+    display: flex; align-items: center; gap: 0; margin-bottom: 2.5rem;
+  }
+  .prog-step {
+    display: flex; align-items: center; flex: 1;
+  }
+  .prog-step:last-child .prog-line { display: none; }
+  .prog-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: var(--muted); flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .prog-step.done .prog-dot { background: var(--accent); border-color: var(--accent); color: white; }
+  .prog-step.active .prog-dot { border-color: var(--gold); color: var(--gold); }
+  .prog-label {
+    font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-top: 0.4rem; text-align: center;
+    white-space: nowrap;
+  }
+  .prog-step.active .prog-label { color: var(--gold); }
+  .prog-step.done .prog-label { color: var(--accent); }
+  .prog-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .prog-line { flex: 1; height: 1px; background: var(--border); margin: 0 0.5rem; margin-bottom: 1.2rem; }
+  .prog-step.done .prog-line { background: var(--accent); }
+
+  .form-step { display: none; }
+  .form-step.active { display: block; animation: fadeUp 0.35s ease both; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.2rem; }
+  .form-label {
+    font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500;
+  }
+  .form-input, .form-select, .form-textarea {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 0.75rem 1rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--ink); transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 100px; }
+  .form-select { appearance: none; cursor: pointer; }
+
+  .service-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+  .service-pick {
+    border: 1.5px solid var(--border); border-radius: 14px; padding: 1rem;
+    cursor: pointer; transition: all 0.2s; background: white;
+    display: flex; align-items: flex-start; gap: 0.7rem;
+  }
+  .service-pick:hover { border-color: var(--accent); }
+  .service-pick.selected { border-color: var(--accent); background: rgba(43,74,62,0.05); }
+  .service-pick-icon { font-size: 1.3rem; }
+  .service-pick-name { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
+  .service-pick-time { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+
+  .mini-calendar { margin-bottom: 1.5rem; }
+  .mini-cal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem;
+  }
+  .mini-cal-month { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
+  .mini-cal-nav { display: flex; gap: 0.4rem; }
+  .mini-nav-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--border); background: none;
+    cursor: pointer; font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; color: var(--ink);
+  }
+  .mini-nav-btn:hover { border-color: var(--ink); }
+
+  .mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.2rem; }
+  .mini-day-name {
+    text-align: center; font-size: 0.6rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); padding: 0.3rem; font-weight: 500;
+  }
+  .mini-day {
+    text-align: center; padding: 0.5rem 0.2rem; border-radius: 8px;
+    font-size: 0.78rem; cursor: pointer; transition: all 0.15s; color: var(--ink);
+  }
+  .mini-day:hover:not(.m-inactive):not(.m-selected) { background: var(--warm); }
+  .mini-day.m-inactive { color: var(--border); cursor: default; }
+  .mini-day.m-selected { background: var(--accent); color: white; font-weight: 500; }
+  .mini-day.m-today:not(.m-selected) { color: var(--gold); font-weight: 500; }
+  .mini-day.m-available::after {
+    content: ''; display: block; width: 3px; height: 3px; background: var(--gold);
+    border-radius: 50%; margin: 0 auto; margin-top: 1px;
+  }
+
+  .time-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
+  .time-btn {
+    padding: 0.55rem 0.5rem; border-radius: 10px;
+    border: 1.5px solid var(--border); background: white;
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem; cursor: pointer;
+    transition: all 0.15s; color: var(--ink); text-align: center;
+  }
+  .time-btn:hover:not(.t-booked):not(.t-selected) { border-color: var(--accent); color: var(--accent); }
+  .time-btn.t-booked { color: var(--border); cursor: default; }
+  .time-btn.t-selected { background: var(--accent); border-color: var(--accent); color: white; font-weight: 500; }
+
+  .booking-summary {
+    background: var(--cream); border-radius: 16px; padding: 1.5rem;
+    margin-bottom: 1.5rem; border: 1px solid var(--border);
+  }
+  .summary-title {
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1rem;
+  }
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-key { color: var(--muted); }
+  .summary-val { font-weight: 500; }
+  .summary-val.gold { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
+
+  .modal-nav {
+    display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;
+  }
+
+  .success-screen {
+    text-align: center; padding: 2rem 0;
+    animation: fadeUp 0.4s ease both;
+  }
+  .success-icon {
+    width: 72px; height: 72px; background: var(--accent); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; margin: 0 auto 1.5rem;
+    animation: scaleIn 0.4s 0.1s ease both;
+  }
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 300; margin-bottom: 0.8rem;
+  }
+  .success-sub { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 2rem; }
+  .success-ref {
+    display: inline-block; background: var(--cream); border: 1px solid var(--border);
+    border-radius: 12px; padding: 0.6rem 1.5rem; font-size: 0.8rem;
+    color: var(--muted); letter-spacing: 0.1em; margin-bottom: 2rem;
+  }
+  .success-ref span { color: var(--accent); font-weight: 600; }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials { padding: 6rem 3rem; background: var(--cream); }
+
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+  .testi-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .testi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+  .testi-stars { color: var(--gold); letter-spacing: 0.1em; font-size: 0.8rem; margin-bottom: 1rem; }
+  .testi-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; font-weight: 400; line-height: 1.6;
+    font-style: italic; color: var(--ink); margin-bottom: 1.5rem;
+  }
+  .testi-author { display: flex; align-items: center; gap: 0.8rem; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 600; color: white;
+    flex-shrink: 0;
+  }
+  .testi-name { font-size: 0.88rem; font-weight: 500; }
+  .testi-role { font-size: 0.72rem; color: var(--muted); }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: var(--accent); color: var(--cream);
+    padding: 6rem 3rem; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300;
+    line-height: 1.1; margin-bottom: 1.2rem; position: relative; z-index: 1;
+  }
+  .cta-title em { font-style: italic; color: var(--gold-light); }
+  .cta-sub {
+    color: rgba(245,240,232,0.65); max-width: 480px; margin: 0 auto 2.5rem;
+    font-size: 0.95rem; line-height: 1.7; position: relative; z-index: 1;
+  }
+  .cta-btn {
+    background: var(--gold); color: var(--ink);
+    padding: 1rem 2.5rem; border-radius: 3rem; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; position: relative; z-index: 1;
+    letter-spacing: 0.02em;
+  }
+  .cta-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink); color: var(--cream);
+    padding: 4rem 3rem 2rem;
+  }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+  .footer-brand .logo { margin-bottom: 1rem; }
+  .footer-desc { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.7; max-width: 280px; }
+  .footer-title { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 1.2rem; }
+  .footer-links { display: flex; flex-direction: column; gap: 0.7rem; }
+  .footer-links a { font-size: 0.85rem; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--cream); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.75rem; color: rgba(255,255,255,0.3);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeLeft {
+    from { transform: translateX(40px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes scaleIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .animate-in {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .animate-in.visible { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; gap: 3rem; }
+    .hero-widget { display: none; }
+    .services-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .step::after { display: none; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .services, .how-it-works, .testimonials, .cta-section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .modal { max-width: 95vw; border-radius: 20px; }
+    .modal-top { padding: 1.5rem; }
+    .modal-body { padding: 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .service-picker { grid-template-columns: 1fr; }
+    .time-picker { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">Appointly <span class="logo-dot"></span></a>
+  <div class="nav-links">
+    <a href="#">Services</a>
+    <a href="#">Providers</a>
+    <a href="#">Pricing</a>
+    <a href="#">About</a>
+  </div>
+  <button class="btn-nav" onclick="openModal()">Book Now</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Smart Scheduling Platform</div>
+    <h1 class="hero-title">
+      Book your<br>next <em>appointment</em><br>effortlessly
+    </h1>
+    <p class="hero-sub">
+      A beautifully crafted booking experience. Find available slots, choose your provider, and confirm — all in under 60 seconds.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openModal()">Schedule Appointment</button>
+      <button class="btn-ghost">View Services</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">12k+</span>
+        <span class="stat-label">Bookings Made</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">98%</span>
+        <span class="stat-label">Satisfaction</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">340+</span>
+        <span class="stat-label">Specialists</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-widget">
+    <div class="floating-badge">
+      <div class="badge-avatar">JL</div>
+      <span><strong>James L.</strong> just booked for 2PM</span>
+    </div>
+    <div class="widget-card">
+      <div class="widget-header">
+        <span class="widget-month" id="hero-month">February 2026</span>
+        <div class="widget-nav">
+          <button class="widget-btn" onclick="heroNav(-1)">‹</button>
+          <button class="widget-btn" onclick="heroNav(1)">›</button>
+        </div>
+      </div>
+      <div class="widget-body">
+        <div class="cal-grid" id="hero-cal"></div>
+        <div class="time-slots">
+          <div class="slots-label">Available Times</div>
+          <div class="slots-grid" id="hero-slots"></div>
+        </div>
+        <button class="widget-cta" onclick="openModal()">Confirm Appointment →</button>
+      </div>
+    </div>
+    <div class="floating-confirm">
+      <div class="confirm-check">
+        <span class="check-circle">✓</span>
+        Reminder sent · 24h before
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services">
+  <div class="section-header animate-in">
+    <div>
+      <div class="section-tag">What We Offer</div>
+      <h2 class="section-title">Our <em>specialties</em><br>at your fingertips</h2>
+    </div>
+    <button class="btn-ghost" style="color: var(--cream); border-color: rgba(255,255,255,0.2);" onclick="openModal()">View All →</button>
+  </div>
+  <div class="services-grid animate-in">
+    <div class="service-card" onclick="openModal()">
+      <div class="service-price">$120</div>
+      <div class="service-icon">🩺</div>
+      <div class="service-name">General Consultation</div>
+      <div class="service-desc">Comprehensive health check and personalized care planning with our experienced physicians.</div>
+      <span class="service-duration">⏱ 45 min</span>
+    </div>
+    <div class="service-card" onclick="openModal()">
+      <div class="service-price">$85</div>
+      <div class="service-icon">🧘</div>
+      <div class="service-name">Wellness Therapy</div>
+      <div class="service-desc">Holistic sessions focused on mental clarity, stress management and mind-body balance.</div>
+      <span class="service-duration">⏱ 60 min</span>
+    </div>
+    <div class="service-card" onclick="openModal()">
+      <div class="service-price">$195</div>
+      <div class="service-icon">🦷</div>
+      <div class="service-name">Dental Checkup</div>
+      <div class="service-desc">Full examination, X-rays, and professional cleaning with cutting-edge equipment.</div>
+      <span class="service-duration">⏱ 60 min</span>
+    </div>
+    <div class="service-card" onclick="openModal()">
+      <div class="service-price">$150</div>
+      <div class="service-icon">👁️</div>
+      <div class="service-name">Eye Examination</div>
+      <div class="service-desc">Complete vision testing, prescription updates and retinal health assessment.</div>
+      <span class="service-duration">⏱ 30 min</span>
+    </div>
+    <div class="service-card" onclick="openModal()">
+      <div class="service-price">$75</div>
+      <div class="service-icon">💉</div>
+      <div class="service-name">Vaccination</div>
+      <div class="service-desc">Immunization and vaccine consultation tailored to your health history and travel needs.</div>
+      <span class="service-duration">⏱ 20 min</span>
+    </div>
+    <div class="service-card" onclick="openModal()">
+      <div class="service-price">$200</div>
+      <div class="service-icon">🧬</div>
+      <div class="service-name">Lab Testing</div>
+      <div class="service-desc">Comprehensive blood panels, metabolic screening and personalized health analytics.</div>
+      <span class="service-duration">⏱ 30 min</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+  <div class="section-header animate-in">
+    <div>
+      <div class="section-tag" style="color: var(--gold);">Simple Process</div>
+      <h2 class="section-title">How it <em>works</em></h2>
+    </div>
+  </div>
+  <div class="steps animate-in">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Choose a Service</div>
+      <div class="step-desc">Browse our curated catalog of services and select the one that best matches your needs.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Pick a Date & Time</div>
+      <div class="step-desc">View real-time availability across providers and pick a slot that works for your schedule.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Enter Your Details</div>
+      <div class="step-desc">Provide basic information securely. Your data is encrypted and never shared with third parties.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title">Get Confirmed</div>
+      <div class="step-desc">Receive instant confirmation with calendar invite and automated reminders before your visit.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-header animate-in">
+    <div>
+      <div class="section-tag">Client Stories</div>
+      <h2 class="section-title">Trusted by<br><em>thousands</em></h2>
+    </div>
+  </div>
+  <div class="testi-grid animate-in">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Booking my annual checkup used to take weeks of phone tag. Now I get it done in under a minute, and the reminders are a lifesaver."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background: linear-gradient(135deg, #c9a84c, #2b4a3e);">SC</div>
+        <div>
+          <div class="testi-name">Sarah Chen</div>
+          <div class="testi-role">Marketing Director</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"The interface is stunningly clean. I was skeptical about switching from my old clinic's system but this is in a completely different league."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background: linear-gradient(135deg, #3d6b5c, #c9a84c);">MR</div>
+        <div>
+          <div class="testi-name">Marcus Reid</div>
+          <div class="testi-role">Software Engineer</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Finally a booking platform that respects my time. Smart slot suggestions, zero waiting, and the team is always responsive to feedback."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background: linear-gradient(135deg, #b84040, #c9a84c);">AL</div>
+        <div>
+          <div class="testi-name">Amara Liu</div>
+          <div class="testi-role">Freelance Designer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Ready to book your<br><em>next appointment?</em></h2>
+  <p class="cta-sub">Join thousands who've simplified their healthcare scheduling. Available 24/7, zero phone calls required.</p>
+  <button class="cta-btn" onclick="openModal()">Book an Appointment →</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="logo" href="#" style="color: var(--cream); text-decoration:none; margin-bottom: 1rem; display:flex;">
+        Appointly <span class="logo-dot" style="margin-left:0.5rem;"></span>
+      </a>
+      <p class="footer-desc">The modern, effortless way to schedule your appointments. Beautiful, fast, and always available.</p>
+    </div>
+    <div>
+      <div class="footer-title">Services</div>
+      <div class="footer-links">
+        <a href="#">Consultation</a>
+        <a href="#">Wellness</a>
+        <a href="#">Dental</a>
+        <a href="#">Eye Care</a>
+        <a href="#">Lab Tests</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-title">Company</div>
+      <div class="footer-links">
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+        <a href="#">Blog</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-title">Legal</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">HIPAA</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Appointly. All rights reserved.</span>
+    <span>Secure · Encrypted · HIPAA Compliant</span>
+  </div>
+</footer>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-top">
+      <span class="modal-title">Book Appointment</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Progress -->
+      <div class="modal-progress">
+        <div class="prog-step active" id="prog-1">
+          <div class="prog-wrapper">
+            <div class="prog-dot">1</div>
+            <div class="prog-label">Service</div>
+          </div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-step" id="prog-2">
+          <div class="prog-wrapper">
+            <div class="prog-dot">2</div>
+            <div class="prog-label">Schedule</div>
+          </div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-step" id="prog-3">
+          <div class="prog-wrapper">
+            <div class="prog-dot">3</div>
+            <div class="prog-label">Details</div>
+          </div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-step" id="prog-4">
+          <div class="prog-wrapper">
+            <div class="prog-dot">4</div>
+            <div class="prog-label">Confirm</div>
+          </div>
+          <div class="prog-line"></div>
+        </div>
+      </div>
+
+      <!-- Step 1: Service -->
+      <div class="form-step active" id="step-1">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:0.4rem;">Select a Service</h3>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">Choose the type of appointment you need</p>
+        <div class="service-picker" id="service-picker">
+          <div class="service-pick" onclick="selectService(this,'General Consultation','45 min','$120')">
+            <div class="service-pick-icon">🩺</div>
+            <div><div class="service-pick-name">General Consultation</div><div class="service-pick-time">45 min · $120</div></div>
+          </div>
+          <div class="service-pick" onclick="selectService(this,'Wellness Therapy','60 min','$85')">
+            <div class="service-pick-icon">🧘</div>
+            <div><div class="service-pick-name">Wellness Therapy</div><div class="service-pick-time">60 min · $85</div></div>
+          </div>
+          <div class="service-pick" onclick="selectService(this,'Dental Checkup','60 min','$195')">
+            <div class="service-pick-icon">🦷</div>
+            <div><div class="service-pick-name">Dental Checkup</div><div class="service-pick-time">60 min · $195</div></div>
+          </div>
+          <div class="service-pick" onclick="selectService(this,'Eye Examination','30 min','$150')">
+            <div class="service-pick-icon">👁️</div>
+            <div><div class="service-pick-name">Eye Examination</div><div class="service-pick-time">30 min · $150</div></div>
+          </div>
+          <div class="service-pick" onclick="selectService(this,'Vaccination','20 min','$75')">
+            <div class="service-pick-icon">💉</div>
+            <div><div class="service-pick-name">Vaccination</div><div class="service-pick-time">20 min · $75</div></div>
+          </div>
+          <div class="service-pick" onclick="selectService(this,'Lab Testing','30 min','$200')">
+            <div class="service-pick-icon">🧬</div>
+            <div><div class="service-pick-name">Lab Testing</div><div class="service-pick-time">30 min · $200</div></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Provider (optional)</label>
+          <select class="form-select">
+            <option value="">Any available provider</option>
+            <option>Dr. Eleanor James</option>
+            <option>Dr. Marcus Webb</option>
+            <option>Dr. Priya Sharma</option>
+            <option>Dr. Thomas Laurent</option>
+          </select>
+        </div>
+        <div class="modal-nav">
+          <div></div>
+          <button class="btn-primary" onclick="goStep(2)">Next: Pick a Date →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Schedule -->
+      <div class="form-step" id="step-2">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:0.4rem;">Choose Date & Time</h3>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">Dots indicate available days</p>
+        <div class="mini-calendar">
+          <div class="mini-cal-header">
+            <span class="mini-cal-month" id="modal-month"></span>
+            <div class="mini-cal-nav">
+              <button class="mini-nav-btn" onclick="modalNav(-1)">‹</button>
+              <button class="mini-nav-btn" onclick="modalNav(1)">›</button>
+            </div>
+          </div>
+          <div class="mini-cal-grid" id="modal-cal"></div>
+        </div>
+        <div class="slots-label">Available Times — <span id="selected-date-label" style="color:var(--ink);font-weight:500;text-transform:none;letter-spacing:0;">Select a date</span></div>
+        <div class="time-picker" id="modal-times"></div>
+        <div class="modal-nav">
+          <button class="btn-ghost" onclick="goStep(1)">← Back</button>
+          <button class="btn-primary" onclick="goStep(3)">Next: Your Details →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Details -->
+      <div class="form-step" id="step-3">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:0.4rem;">Your Information</h3>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">All information is securely encrypted</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" type="text" placeholder="John" id="fname">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" type="text" placeholder="Doe" id="lname">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" placeholder="john@email.com" id="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input" type="tel" placeholder="+1 (555) 000-0000" id="phone">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input class="form-input" type="date" id="dob">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes for Provider (optional)</label>
+          <textarea class="form-textarea" placeholder="Any symptoms, concerns, or relevant medical history..."></textarea>
+        </div>
+        <div class="modal-nav">
+          <button class="btn-ghost" onclick="goStep(2)">← Back</button>
+          <button class="btn-primary" onclick="goStep(4)">Review & Confirm →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Confirm -->
+      <div class="form-step" id="step-4">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:0.4rem;">Review Your Booking</h3>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">Please confirm your appointment details</p>
+        <div class="booking-summary">
+          <div class="summary-title">Appointment Summary</div>
+          <div class="summary-row">
+            <span class="summary-key">Service</span>
+            <span class="summary-val" id="confirm-service">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Date</span>
+            <span class="summary-val" id="confirm-date">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Time</span>
+            <span class="summary-val" id="confirm-time">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Patient</span>
+            <span class="summary-val" id="confirm-name">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Duration</span>
+            <span class="summary-val" id="confirm-duration">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Total</span>
+            <span class="summary-val gold" id="confirm-price">—</span>
+          </div>
+        </div>
+        <p style="font-size:0.78rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;">By confirming, you agree to our cancellation policy. Free cancellation up to 24 hours before your appointment. A confirmation will be sent to your email.</p>
+        <div class="modal-nav">
+          <button class="btn-ghost" onclick="goStep(3)">← Back</button>
+          <button class="btn-primary" style="background:var(--gold);color:var(--ink);" onclick="confirmBooking()">✓ Confirm Booking</button>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="form-step" id="step-success">
+        <div class="success-screen">
+          <div class="success-icon">✓</div>
+          <h3 class="success-title">You're all booked!</h3>
+          <p class="success-sub">Your appointment has been confirmed. A calendar invitation and reminder have been sent to your email address.</p>
+          <div class="success-ref">Booking ID: <span id="booking-id">APT-XXXXXX</span></div>
+          <button class="btn-primary" onclick="closeModal()">Done</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+let currentStep = 1;
+let heroDate = new Date(2026, 1, 1); // Feb 2026
+let modalDate = new Date(2026, 1, 1);
+let selectedHeroDay = null;
+let selectedModalDay = null;
+let selectedHeroSlot = null;
+let selectedModalSlot = null;
+let selectedService = null;
+let selectedServiceDuration = null;
+let selectedServicePrice = null;
+
+// Available slots (mocked)
+const allSlots = ['9:00 AM','9:45 AM','10:30 AM','11:15 AM','2:00 PM','2:45 PM','3:30 PM','4:15 PM','5:00 PM'];
+const bookedSlots = ['9:45 AM','11:15 AM','3:30 PM'];
+
+// Days with availability
+function hasSlotsDay(day) { return day % 3 !== 0 && day !== 0; }
+
+// ── Hero Calendar ──
+function buildHeroCal() {
+  const grid = document.getElementById('hero-cal');
+  const month = heroDate.getMonth(), year = heroDate.getFullYear();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const names = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = names.map(n=>`<div class="cal-day-name">${n}</div>`).join('');
+  for(let i=0;i<firstDay;i++) html += `<div class="cal-day inactive"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday = d===17 && month===1 && year===2026;
+    const hasSlot = hasSlotsDay(d);
+    const isSel = d===selectedHeroDay;
+    html += `<div class="cal-day${isToday?' today':''}${hasSlot?' has-slot':''}${isSel?' selected':''}" onclick="selectHeroDay(${d})">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  document.getElementById('hero-month').textContent = heroDate.toLocaleString('default',{month:'long',year:'numeric'});
+  buildHeroSlots();
+}
+
+function buildHeroSlots() {
+  const slots = document.getElementById('hero-slots');
+  const displaySlots = ['9:00 AM','10:30 AM','2:00 PM','2:45 PM','4:15 PM','5:00 PM'];
+  slots.innerHTML = displaySlots.map(s => {
+    const booked = bookedSlots.includes(s);
+    const sel = s===selectedHeroSlot;
+    return `<button class="slot${booked?' booked':''}${sel?' selected-slot':''}" onclick="selectHeroSlot(this,'${s}')" ${booked?'disabled':''}>${s}</button>`;
+  }).join('');
+}
+
+function selectHeroDay(d){ selectedHeroDay=d; buildHeroCal(); }
+function selectHeroSlot(el,s){ selectedHeroSlot=s; buildHeroSlots(); }
+function heroNav(dir){ heroDate = new Date(heroDate.getFullYear(), heroDate.getMonth()+dir, 1); buildHeroCal(); }
+
+// ── Modal Calendar ──
+function buildModalCal() {
+  const grid = document.getElementById('modal-cal');
+  const month = modalDate.getMonth(), year = modalDate.getFullYear();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const names = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = names.map(n=>`<div class="mini-day-name">${n}</div>`).join('');
+  for(let i=0;i<firstDay;i++) html += `<div class="mini-day m-inactive"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday = d===17 && month===1 && year===2026;
+    const isAvail = hasSlotsDay(d);
+    const isSel = d===selectedModalDay;
+    html += `<div class="mini-day${isAvail?' m-available':''}${isToday?' m-today':''}${isSel?' m-selected':''}" onclick="selectModalDay(${d})">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  document.getElementById('modal-month').textContent = modalDate.toLocaleString('default',{month:'long',year:'numeric'});
+}
+
+function selectModalDay(d) {
+  selectedModalDay = d; selectedModalSlot = null;
+  buildModalCal();
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('selected-date-label').textContent = `${months[modalDate.getMonth()]} ${d}, ${modalDate.getFullYear()}`;
+  buildModalTimes();
+}
+
+function buildModalTimes() {
+  const wrap = document.getElementById('modal-times');
+  if(!selectedModalDay){ wrap.innerHTML='<p style="color:var(--muted);font-size:0.82rem;">Pick a date to see times</p>'; return; }
+  wrap.innerHTML = allSlots.map(s => {
+    const booked = bookedSlots.includes(s);
+    const sel = s===selectedModalSlot;
+    return `<button class="time-btn${booked?' t-booked':''}${sel?' t-selected':''}" onclick="selectModalTime(this,'${s}')" ${booked?'disabled':''}>${s}</button>`;
+  }).join('');
+}
+
+function selectModalTime(el, t) { selectedModalSlot=t; buildModalTimes(); }
+function modalNav(dir){ modalDate = new Date(modalDate.getFullYear(), modalDate.getMonth()+dir, 1); buildModalCal(); }
+
+// ── Service Selection ──
+function selectService(el, name, duration, price) {
+  document.querySelectorAll('.service-pick').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedService = name;
+  selectedServiceDuration = duration;
+  selectedServicePrice = price;
+}
+
+// ── Steps ──
+function goStep(n) {
+  if(n===4) {
+    // Populate summary
+    const fname = document.getElementById('fname').value || 'Patient';
+    const lname = document.getElementById('lname').value || '';
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('confirm-service').textContent = selectedService || 'Not selected';
+    document.getElementById('confirm-date').textContent = selectedModalDay ? `${months[modalDate.getMonth()]} ${selectedModalDay}, ${modalDate.getFullYear()}` : 'Not selected';
+    document.getElementById('confirm-time').textContent = selectedModalSlot || 'Not selected';
+    document.getElementById('confirm-name').textContent = `${fname} ${lname}`.trim();
+    document.getElementById('confirm-duration').textContent = selectedServiceDuration || '—';
+    document.getElementById('confirm-price').textContent = selectedServicePrice || '—';
+  }
+
+  const prev = currentStep;
+  currentStep = n;
+
+  // Update progress
+  for(let i=1;i<=4;i++){
+    const el = document.getElementById(`prog-${i}`);
+    el.classList.remove('active','done');
+    if(i<n) el.classList.add('done');
+    if(i===n) el.classList.add('active');
+  }
+
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(`step-${n}`).classList.add('active');
+}
+
+// ── Booking Confirm ──
+function confirmBooking() {
+  const id = 'APT-' + Math.random().toString(36).slice(2,8).toUpperCase();
+  document.getElementById('booking-id').textContent = id;
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-success').classList.add('active');
+  document.querySelector('.modal-progress').style.display = 'none';
+}
+
+// ── Modal ──
+function openModal() {
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  currentStep = 1;
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-1').classList.add('active');
+  document.querySelector('.modal-progress').style.display = '';
+  for(let i=1;i<=4;i++){
+    const el = document.getElementById(`prog-${i}`);
+    el.classList.remove('active','done');
+    if(i===1) el.classList.add('active');
+  }
+  buildModalCal();
+  buildModalTimes();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+  selectedModalDay=null; selectedModalSlot=null;
+  selectedService=null;
+}
+
+function handleOverlayClick(e){ if(e.target===document.getElementById('modal')) closeModal(); }
+
+// ── Scroll Animations ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+// ── Init ──
+buildHeroCal();
+</script>
+</body>
+</html>
